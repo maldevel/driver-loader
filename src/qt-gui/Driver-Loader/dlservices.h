@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef DLSERVICES_H
+#define DLSERVICES_H
 
 /*
     This file is part of driver-loader
@@ -23,21 +23,11 @@
     For more see the file 'LICENSE' for copying permission.
 */
 
-#include <QMainWindow>
+#include <Windows.h>
 
-namespace Ui {
-class MainWindow;
+namespace Services {
+bool Install(const char* driver, const char* service);
+bool Uninstall(const char* service);
 }
 
-class MainWindow : public QMainWindow {
-  Q_OBJECT
-
- public:
-  explicit MainWindow(QWidget* parent = 0);
-  ~MainWindow();
-
- private:
-  Ui::MainWindow* ui;
-};
-
-#endif // MAINWINDOW_H
+#endif // DLSERVICES_H

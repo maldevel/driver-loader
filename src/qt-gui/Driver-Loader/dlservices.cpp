@@ -1,6 +1,3 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
-
 /*
     This file is part of driver-loader
     Copyright (C) 2017 @maldevel
@@ -23,21 +20,16 @@
     For more see the file 'LICENSE' for copying permission.
 */
 
-#include <QMainWindow>
+#include "dlservices.h"
 
-namespace Ui {
-class MainWindow;
+bool Services::Install(const char* driver, const char* service) {
+  if(driver == NULL || service == NULL) return false;
+
+  return false;
 }
 
-class MainWindow : public QMainWindow {
-  Q_OBJECT
+bool Services::Uninstall(const char* service) {
+  if(service == NULL) return false;
 
- public:
-  explicit MainWindow(QWidget* parent = 0);
-  ~MainWindow();
-
- private:
-  Ui::MainWindow* ui;
-};
-
-#endif // MAINWINDOW_H
+  return false;
+}
