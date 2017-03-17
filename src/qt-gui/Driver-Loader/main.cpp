@@ -33,21 +33,21 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
-    //    if (Services::init() == false)
-    //    {
-    //        QMessageBox msgBox;
-    //        msgBox.setText("Can't connect to service control manager.");
-    //        msgBox.setStandardButtons(QMessageBox::Ok);
-    //        msgBox.setIcon(QMessageBox::Critical);
-    //        msgBox.exec();
-    //        QApplication::quit();
-    //        return 1;
-    //    }
-    //    else
-    //    {
-    MainWindow w;
-    w.show();
+    if (Services::init() == false)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Can't connect to service control manager.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
+        QApplication::quit();
+        return 1;
+    }
+    else
+    {
+        MainWindow w;
+        w.show();
 
-    return a.exec();
-    //    }
+        return a.exec();
+    }
 }
