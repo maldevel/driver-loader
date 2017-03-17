@@ -40,7 +40,7 @@ FORMS    += mainwindow.ui
 RESOURCES += \
     application.qrc
 
-LIBS += -lVersion -lShlwapi
+LIBS += -lVersion -lShlwapi -lAdvapi32
 
 win32:RC_ICONS += myappico.ico
 

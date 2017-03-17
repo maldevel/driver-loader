@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>429</width>
-    <height>437</height>
+    <height>468</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
       <x>10</x>
       <y>10</y>
       <width>411</width>
-      <height>416</height>
+      <height>451</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -112,6 +112,9 @@
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
@@ -194,24 +197,7 @@
          </item>
         </layout>
        </item>
-      </layout>
-     </item>
-     <item>
-      <spacer name="verticalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <layout class="QFormLayout" name="formLayout_2">
-       <item row="0" column="0">
+       <item row="4" column="0">
         <widget class="QLabel" name="serviceNamelbl">
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
@@ -221,40 +207,28 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="serviceNametxt"/>
-       </item>
-       <item row="1" column="0">
+       <item row="5" column="0">
         <widget class="QLabel" name="displayNamelbl">
          <property name="text">
           <string>Display Name:</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="serviceDisplayNametxt"/>
-       </item>
-       <item row="2" column="0">
+       <item row="6" column="0">
         <widget class="QLabel" name="serviceTypelbl">
          <property name="text">
           <string>Service Type:</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QComboBox" name="serviceTypetxt"/>
-       </item>
-       <item row="3" column="0">
+       <item row="7" column="0">
         <widget class="QLabel" name="serviceStartlbl">
          <property name="text">
           <string>Service Start:</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QComboBox" name="serviceStarttxt"/>
-       </item>
-       <item row="4" column="0">
+       <item row="8" column="0">
         <widget class="QLabel" name="serviceErrorlbl">
          <property name="text">
           <string>Error:</string>
@@ -262,14 +236,29 @@
         </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QComboBox" name="serviceErrortxt"/>
+        <widget class="QLineEdit" name="serviceNametxt"/>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="serviceDisplayNametxt"/>
+       </item>
+       <item row="6" column="1">
+        <widget class="QComboBox" name="serviceTypecmb"/>
+       </item>
+       <item row="7" column="1">
+        <widget class="QComboBox" name="serviceStartcmb"/>
+       </item>
+       <item row="8" column="1">
+        <widget class="QComboBox" name="serviceErrorcmb"/>
        </item>
       </layout>
      </item>
      <item>
-      <spacer name="verticalSpacer_3">
+      <spacer name="verticalSpacer_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -319,5 +308,22 @@
  <resources>
   <include location="application.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>exitbtn</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>380</x>
+     <y>67</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>214</x>
+     <y>218</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

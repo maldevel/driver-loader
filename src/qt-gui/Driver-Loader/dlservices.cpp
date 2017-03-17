@@ -22,16 +22,111 @@
 
 #include "dlservices.h"
 
-bool Services::Install(const char *driver, const char *service)
+static SC_HANDLE scManager;
+
+bool Services::init(void)
 {
-    if (driver == NULL || service == NULL) return false;
+    scManager = OpenSCManager(NULL, SERVICES_ACTIVE_DATABASE, SC_MANAGER_ALL_ACCESS);
+    if (scManager == NULL)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+void Services::uninit(void)
+{
+    if (scManager == NULL) return;
+
+    CloseServiceHandle(scManager);
+}
+
+unsigned long Services::Register(QString driver, QString serviceName, QString displayName,
+                                 QString startTypeStr, QString error)
+{
+    if (driver == NULL || serviceName == NULL || scManager == NULL || displayName == NULL) return false;
+
+    SC_HANDLE scService;
+    unsigned long startType = SERVICE_DEMAND_START;
+    unsigned long errorControl = SERVICE_ERROR_NORMAL;
+
+    //"Automatic" "Boot" "Demand" "Disabled" "System"
+    if (startTypeStr.compare("Automatic", Qt::CaseSensitive) == 0)
+    {
+        startType = SERVICE_AUTO_START;
+    }
+    else if (startTypeStr.compare("Boot", Qt::CaseSensitive) == 0)
+    {
+        startType = SERVICE_BOOT_START;
+    }
+    else if (startTypeStr.compare("Demand", Qt::CaseSensitive) == 0)
+    {
+        startType = SERVICE_DEMAND_START;
+    }
+    else if (startTypeStr.compare("Disabled", Qt::CaseSensitive) == 0)
+    {
+        startType = SERVICE_DISABLED;
+    }
+    else if (startTypeStr.compare("System", Qt::CaseSensitive) == 0)
+    {
+        startType = SERVICE_SYSTEM_START;
+    }
+
+    //"Critical" "Ignore" "Normal" "Severe"
+    if (error.compare("Critical", Qt::CaseSensitive) == 0)
+    {
+        errorControl = SERVICE_ERROR_CRITICAL;
+    }
+    else if (error.compare("Ignore", Qt::CaseSensitive) == 0)
+    {
+        errorControl = SERVICE_ERROR_IGNORE;
+    }
+    else if (error.compare("Normal", Qt::CaseSensitive) == 0)
+    {
+        errorControl = SERVICE_ERROR_NORMAL;
+    }
+    else if (error.compare("Severe", Qt::CaseSensitive) == 0)
+    {
+        errorControl = SERVICE_ERROR_SEVERE;
+    }
+
+    if ((scService = CreateServiceA(scManager, serviceName.toStdString().c_str(), displayName.toStdString().c_str(),
+                                    SERVICE_ALL_ACCESS, SERVICE_KERNEL_DRIVER,
+                                    startType, errorControl,
+                                    driver.toStdString().c_str(),
+                                    NULL, NULL, NULL, NULL, NULL)) == NULL)
+    {
+        if (GetLastError() == ERROR_SERVICE_EXISTS)
+        {
+            return ERROR_SERVICE_EXISTS;
+        }
+
+        return 1;
+    }
+
+    CloseServiceHandle(scService);
+
+    return 0;
+}
+
+bool Services::Unregister(const char *service)
+{
+    if (service == NULL || scManager == NULL) return false;
 
     return false;
 }
 
-bool Services::Uninstall(const char *service)
+bool Start(const char *service)
 {
-    if (service == NULL) return false;
+    if (service == NULL || scManager == NULL) return false;
+
+    return false;
+}
+
+bool Stop(const char *service)
+{
+    if (service == NULL || scManager == NULL) return false;
 
     return false;
 }

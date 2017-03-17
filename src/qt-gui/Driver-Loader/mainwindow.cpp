@@ -25,17 +25,24 @@
 #include "dlconfig.h"
 #include "dldrivers.h"
 #include "dlcommon.h"
+#include "dlservices.h"
 
 #include <QFileDialog>
+#include <QMessageBox>
+#include <QDir>
 
 static QString _fileName = 0;
 
-static void _analyzeFile(Ui::MainWindow *ui, QString filename)
+static void _loadFile(Ui::MainWindow *ui, QString filename)
 {
-    ui->driverPathtxt->setText(filename);
+    //ui->driverPathtxt->setText(filename);
     ui->driverVersiontxt->setText(Drivers::GetFileVersion(filename));
     ui->driverSizetxt->setText(QString::number(Drivers::GetDriverFileSize(filename)) + " bytes");
     ui->driverFileTimetxt->setText(Drivers::GetFileLastWriteTime(filename));
+
+    QFileInfo fi(filename);
+    ui->serviceNametxt->setText(fi.baseName());
+    ui->serviceDisplayNametxt->setText(fi.baseName());
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -48,25 +55,110 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint);
 
     ui->versionlbl->setText("Ver: V" APP_VERSION " - " APP_DATE);
+    ui->serviceTypecmb->addItem("Driver");
+    ui->serviceStartcmb->addItems(QList<QString>() << "Automatic" << "Boot" << "Demand" << "Disabled" << "System");
+    ui->serviceStartcmb->setCurrentIndex(2);
+    ui->serviceErrorcmb->addItems(QList<QString>() << "Critical" << "Ignore" << "Normal" << "Severe");
+    ui->serviceErrorcmb->setCurrentIndex(2);
 }
 
 MainWindow::~MainWindow()
 {
+    Services::uninit();
     delete ui;
-}
-
-void MainWindow::on_exitbtn_clicked()
-{
-    QCoreApplication::quit();
 }
 
 void MainWindow::on_browsebtn_clicked()
 {
     _fileName = QFileDialog::getOpenFileName(this, tr("Select Windows Driver"), "", tr("Windows Drivers Files (*.sys)"));
-    _analyzeFile(ui, _fileName);
+    ui->driverPathtxt->setText(_fileName);
 }
 
 void MainWindow::on_driverPathtxt_textChanged(const QString &arg1)
 {
-    _analyzeFile(ui, ui->driverPathtxt->text());
+    (void)arg1;
+    _loadFile(ui, ui->driverPathtxt->text());
+}
+
+void MainWindow::on_registerbtn_clicked()
+{
+    unsigned long registrationResult = 0;
+
+    if (ui->driverPathtxt->text().trimmed().isEmpty())
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Please provide a valid driver filepath.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+        return;
+    }
+
+    if (ui->serviceNametxt->text().trimmed().isEmpty())
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Please provide a name for the service.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+        return;
+    }
+
+    if (ui->serviceDisplayNametxt->text().trimmed().isEmpty())
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Please provide a service name to display.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+        return;
+    }
+
+    registrationResult = Services::Register(ui->driverPathtxt->text().trimmed(),
+                                            ui->serviceNametxt->text().trimmed(),
+                                            ui->serviceDisplayNametxt->text().trimmed(),
+                                            ui->serviceStartcmb->itemText(ui->serviceStartcmb->currentIndex()),
+                                            ui->serviceErrorcmb->itemText(ui->serviceErrorcmb->currentIndex()));
+    if (registrationResult == 2)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Registration failed. The service already exists.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+        return;
+    }
+    else if (registrationResult == 1)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Registration failed.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
+        return;
+    }
+    else if (registrationResult == 0)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Registration succeeded.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Information);
+        msgBox.exec();
+        return;
+    }
+}
+
+void MainWindow::on_unregisterbtn_clicked()
+{
+
+}
+
+void MainWindow::on_startbtn_clicked()
+{
+
+}
+
+void MainWindow::on_stopbtn_clicked()
+{
+
 }

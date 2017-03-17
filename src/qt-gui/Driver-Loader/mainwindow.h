@@ -39,11 +39,18 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_exitbtn_clicked();
 
     void on_browsebtn_clicked();
 
     void on_driverPathtxt_textChanged(const QString &arg1);
+
+    void on_registerbtn_clicked();
+
+    void on_unregisterbtn_clicked();
+
+    void on_startbtn_clicked();
+
+    void on_stopbtn_clicked();
 
 private:
     Ui::MainWindow *ui;

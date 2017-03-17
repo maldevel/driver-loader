@@ -24,11 +24,27 @@
 */
 
 #include <Windows.h>
+#include <QString>
 
 namespace Services
 {
-    bool Install(const char *driver, const char *service);
-    bool Uninstall(const char *service);
+    //initialize services lib stuff
+    bool init(void);
+
+    //un-initialize services lib stuff
+    void uninit(void);
+
+    //register a new service (install)
+    unsigned long Register(QString driver, QString serviceName, QString displayName, QString startType, QString error);
+
+    //unregister a service (uninstall)
+    bool Unregister(const char *service);
+
+    //start a service
+    bool Start(const char *service);
+
+    //stop a service
+    bool Stop(const char *service);
 }
 
 #endif // DLSERVICES_H

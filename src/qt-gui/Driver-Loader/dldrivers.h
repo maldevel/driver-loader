@@ -27,8 +27,13 @@
 
 namespace Drivers
 {
+    //get driver file version
     QString GetFileVersion(QString fName);
+
+    //get driver file size in bytes
     unsigned long GetDriverFileSize(QString fName);
+
+    //get driver file last-write time
     QString GetFileLastWriteTime(QString fName);
 }
 
