@@ -28,6 +28,8 @@
 namespace Drivers
 {
     QString GetFileVersion(QString fName);
+    unsigned long GetDriverFileSize(QString fName);
+    QString GetFileLastWriteTime(QString fName);
 }
 
 #endif // DLDRIVER_H

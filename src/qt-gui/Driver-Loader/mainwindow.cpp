@@ -28,7 +28,15 @@
 
 #include <QFileDialog>
 
-static QString fileName = 0;
+static QString _fileName = 0;
+
+static void _analyzeFile(Ui::MainWindow *ui, QString filename)
+{
+    ui->driverPathtxt->setText(filename);
+    ui->driverVersiontxt->setText(Drivers::GetFileVersion(filename));
+    ui->driverSizetxt->setText(QString::number(Drivers::GetDriverFileSize(filename)) + " bytes");
+    ui->driverFileTimetxt->setText(Drivers::GetFileLastWriteTime(filename));
+}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -54,13 +62,11 @@ void MainWindow::on_exitbtn_clicked()
 
 void MainWindow::on_browsebtn_clicked()
 {
-    fileName = QFileDialog::getOpenFileName(this, tr("Select Windows Driver"), "", tr("Windows Drivers Files (*.sys)"));
-
-    ui->driverPathtxt->setText(fileName);
-    ui->driverVersiontxt->setText(Drivers::GetFileVersion(fileName));
+    _fileName = QFileDialog::getOpenFileName(this, tr("Select Windows Driver"), "", tr("Windows Drivers Files (*.sys)"));
+    _analyzeFile(ui, _fileName);
 }
 
 void MainWindow::on_driverPathtxt_textChanged(const QString &arg1)
 {
-    ui->driverVersiontxt->setText(Drivers::GetFileVersion(ui->driverPathtxt->text()));
+    _analyzeFile(ui, ui->driverPathtxt->text());
 }

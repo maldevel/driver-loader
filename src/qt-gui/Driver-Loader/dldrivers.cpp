@@ -25,21 +25,12 @@
 #include <Windows.h>
 #include <Shlwapi.h>
 
-//HANDLE h;
-
-//if ((h = CreateFileA(filename, GENERIC_READ, 0, 0, OPEN_EXISTING, 0, 0)) == INVALID_HANDLE_VALUE)
-//{
-//    return false;
-//}
-
-
 static BOOL _fileExists(const char *filename)
 {
     if (filename == NULL)return FALSE;
 
     return PathFileExistsA(filename);
 }
-
 
 QString Drivers::GetFileVersion(QString fName)
 {
@@ -83,4 +74,139 @@ QString Drivers::GetFileVersion(QString fName)
     Common::hFree(buffer);
 
     return fVersion;
+}
+
+unsigned long Drivers::GetDriverFileSize(QString fName)
+{
+    if (fName == NULL || !_fileExists(fName.toStdString().c_str())) return 0;
+
+    HANDLE hFile;
+    unsigned long size = 0;
+    unsigned long sizeHigh = 0;
+
+    if ((hFile = CreateFileA(fName.toStdString().c_str(), GENERIC_READ, 0, 0, OPEN_EXISTING, 0, 0)) == INVALID_HANDLE_VALUE)
+    {
+        return 0;
+    }
+
+    if ((size = GetFileSize(hFile,  NULL)) == INVALID_FILE_SIZE)
+    {
+        if (GetLastError() == NO_ERROR)
+        {
+            if ((size = GetFileSize(hFile,  &sizeHigh)) != INVALID_FILE_SIZE)
+            {
+                return sizeHigh;
+            }
+        }
+        return 0;
+    }
+
+    CloseHandle(hFile);
+
+    return size;
+}
+
+QString Drivers::GetFileLastWriteTime(QString fName)
+{
+    if (fName == NULL || !_fileExists(fName.toStdString().c_str())) return 0;
+
+    HANDLE hFile;
+    FILETIME ftCreate, ftAccess, ftWrite;
+    SYSTEMTIME stUTC, stLocal;
+    QString day = "";
+    QString month = "";
+
+    if ((hFile = CreateFileA(fName.toStdString().c_str(), GENERIC_READ, 0, 0, OPEN_EXISTING, 0, 0)) == INVALID_HANDLE_VALUE)
+    {
+        return "";
+    }
+
+    if (GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite) == 0)
+    {
+        return "";
+    }
+
+    if (FileTimeToSystemTime(&ftWrite, &stUTC) == 0)
+    {
+        return "";
+    }
+
+    if (SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stLocal) == 0)
+    {
+        return "";
+    }
+
+    switch (stLocal.wDayOfWeek)
+    {
+        case 0:
+            day = "Sunday";
+            break;
+        case 1:
+            day = "Monday";
+            break;
+        case 2:
+            day = "Tuesday";
+            break;
+        case 3:
+            day = "Wednesday";
+            break;
+        case 4:
+            day = "Thursday";
+            break;
+        case 5:
+            day = "Friday";
+            break;
+        case 6:
+            day = "Saturday";
+            break;
+    };
+
+    switch (stLocal.wMonth)
+    {
+        case 1:
+            month = "January";
+            break;
+        case 2:
+            month = "February";
+            break;
+        case 3:
+            month = "March";
+            break;
+        case 4:
+            month = "April";
+            break;
+        case 5:
+            month = "May";
+            break;
+        case 6:
+            month = "June";
+            break;
+        case 7:
+            month = "July";
+            break;
+        case 8:
+            month = "August";
+            break;
+        case 9:
+            month = "September";
+            break;
+        case 10:
+            month = "October";
+            break;
+        case 11:
+            month = "November";
+            break;
+        case 12:
+            month = "December";
+            break;
+    };
+
+    return QString("%1, %2 %3, %4 %5:%6:%7")
+           .arg(day)
+           .arg(month)
+           .arg(stLocal.wDay)
+           .arg(stLocal.wYear)
+           .arg(stLocal.wHour)
+           .arg(stLocal.wMinute)
+           .arg(stLocal.wSecond);
 }
