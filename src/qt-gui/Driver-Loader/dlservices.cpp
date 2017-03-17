@@ -169,7 +169,21 @@ bool Services::Start(QString service)
     if (service == NULL || scManager == NULL || service.trimmed().isEmpty() ||
             service.trimmed().length() > 256) return false;
 
-    return false;
+    SC_HANDLE srvHandle;
+
+    if ((srvHandle = Open(service)) == NULL)
+    {
+        return false;
+    }
+
+    if (Start(srvHandle) == false)
+    {
+        CloseServiceHandle(srvHandle);
+        return false;
+    }
+
+    CloseServiceHandle(srvHandle);
+    return true;
 }
 
 bool Services::Stop(SC_HANDLE service)
@@ -191,5 +205,19 @@ bool Services::Stop(QString service)
     if (service == NULL || scManager == NULL || service.trimmed().isEmpty() ||
             service.trimmed().length() > 256) return false;
 
-    return false;
+    SC_HANDLE srvHandle;
+
+    if ((srvHandle = Open(service)) == NULL)
+    {
+        return false;
+    }
+
+    if (Stop(srvHandle) == false)
+    {
+        CloseServiceHandle(srvHandle);
+        return false;
+    }
+
+    CloseServiceHandle(srvHandle);
+    return true;
 }

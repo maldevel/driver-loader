@@ -179,10 +179,48 @@ void MainWindow::on_unregisterbtn_clicked()
 
 void MainWindow::on_startbtn_clicked()
 {
+    if (ui->serviceNametxt->text().trimmed().isEmpty() ||
+            ui->serviceNametxt->text().trimmed().length() > 256)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Please provide service name.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+        return;
+    }
 
+    if (Services::Start(ui->serviceNametxt->text().trimmed()) == false)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Starting service failed.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+        return;
+    }
 }
 
 void MainWindow::on_stopbtn_clicked()
 {
+    if (ui->serviceNametxt->text().trimmed().isEmpty() ||
+            ui->serviceNametxt->text().trimmed().length() > 256)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Please provide service name.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+        return;
+    }
 
+    if (Services::Stop(ui->serviceNametxt->text().trimmed()) == false)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Stopping service failed.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+        return;
+    }
 }
