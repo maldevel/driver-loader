@@ -113,7 +113,7 @@ unsigned long Services::Register(QString driver, QString serviceName, QString di
     {
         if (GetLastError() == ERROR_SERVICE_EXISTS)
         {
-            return ERROR_SERVICE_EXISTS;
+            return 2;
         }
 
         return 1;
@@ -136,11 +136,12 @@ bool Services::Unregister(QString service)
         return false;
     }
 
-    if (Stop(srvHandle) == false)
-    {
-        CloseServiceHandle(srvHandle);
-        return false;
-    }
+    Stop(srvHandle);
+    //    if (Stop(srvHandle) == false)
+    //    {
+    //        CloseServiceHandle(srvHandle);
+    //        return false;
+    //    }
 
     if (DeleteService(srvHandle) == 0)
     {

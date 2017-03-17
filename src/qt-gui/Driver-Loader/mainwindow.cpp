@@ -175,6 +175,15 @@ void MainWindow::on_unregisterbtn_clicked()
         msgBox.exec();
         return;
     }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Service unregistration succeeded.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Information);
+        msgBox.exec();
+        return;
+    }
 }
 
 void MainWindow::on_startbtn_clicked()
@@ -199,6 +208,15 @@ void MainWindow::on_startbtn_clicked()
         msgBox.exec();
         return;
     }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Service started.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Information);
+        msgBox.exec();
+        return;
+    }
 }
 
 void MainWindow::on_stopbtn_clicked()
@@ -220,6 +238,15 @@ void MainWindow::on_stopbtn_clicked()
         msgBox.setText("Stopping service failed.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+        return;
+    }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Service stopped.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Information);
         msgBox.exec();
         return;
     }
