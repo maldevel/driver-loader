@@ -25,9 +25,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    dlservices.cpp
+    dlservices.cpp \
+    dldrivers.cpp \
+    dlcommon.cpp
 
 HEADERS  += mainwindow.h \
-    dlservices.h
+    dlservices.h \
+    dlconfig.h \
+    dldrivers.h \
+    dlcommon.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    application.qrc
+
+LIBS += -lVersion -lShlwapi
+
+win32:RC_ICONS += myappico.ico
+

@@ -22,14 +22,16 @@
 
 #include "dlservices.h"
 
-bool Services::Install(const char* driver, const char* service) {
-  if(driver == NULL || service == NULL) return false;
+bool Services::Install(const char *driver, const char *service)
+{
+    if (driver == NULL || service == NULL) return false;
 
-  return false;
+    return false;
 }
 
-bool Services::Uninstall(const char* service) {
-  if(service == NULL) return false;
+bool Services::Uninstall(const char *service)
+{
+    if (service == NULL) return false;
 
-  return false;
+    return false;
 }

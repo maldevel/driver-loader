@@ -61,7 +61,7 @@ bool Install(LPCSTR driver, LPCSTR service)
 	SC_HANDLE scManager;
 	SC_HANDLE srvHandle;
 
-	scManager = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+	scManager = OpenSCManager(NULL, SERVICES_ACTIVE_DATABASE, SC_MANAGER_ALL_ACCESS);
 	if (!scManager) {
 		printf("OpenSCManager failed..\n");
 		return FALSE;

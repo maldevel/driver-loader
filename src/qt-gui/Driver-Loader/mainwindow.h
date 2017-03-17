@@ -25,19 +25,28 @@
 
 #include <QMainWindow>
 
-namespace Ui {
-class MainWindow;
+namespace Ui
+{
+    class MainWindow;
 }
 
-class MainWindow : public QMainWindow {
-  Q_OBJECT
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
 
- public:
-  explicit MainWindow(QWidget* parent = 0);
-  ~MainWindow();
+public:
+    explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
 
- private:
-  Ui::MainWindow* ui;
+private slots:
+    void on_exitbtn_clicked();
+
+    void on_browsebtn_clicked();
+
+    void on_driverPathtxt_textChanged(const QString &arg1);
+
+private:
+    Ui::MainWindow *ui;
 };
 
 #endif // MAINWINDOW_H

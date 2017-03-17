@@ -22,13 +22,45 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "dlconfig.h"
+#include "dldrivers.h"
+#include "dlcommon.h"
 
-MainWindow::MainWindow(QWidget* parent) :
-  QMainWindow(parent),
-  ui(new Ui::MainWindow) {
-  ui->setupUi(this);
+#include <QFileDialog>
+
+static QString fileName = 0;
+
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+
+    //disable maximize button and window resizing
+    setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint);
+
+    ui->versionlbl->setText("Ver: V" APP_VERSION " - " APP_DATE);
 }
 
-MainWindow::~MainWindow() {
-  delete ui;
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::on_exitbtn_clicked()
+{
+    QCoreApplication::quit();
+}
+
+void MainWindow::on_browsebtn_clicked()
+{
+    fileName = QFileDialog::getOpenFileName(this, tr("Select Windows Driver"), "", tr("Windows Drivers Files (*.sys)"));
+
+    ui->driverPathtxt->setText(fileName);
+    ui->driverVersiontxt->setText(Drivers::GetFileVersion(fileName));
+}
+
+void MainWindow::on_driverPathtxt_textChanged(const QString &arg1)
+{
+    ui->driverVersiontxt->setText(Drivers::GetFileVersion(ui->driverPathtxt->text()));
 }

@@ -1,5 +1,5 @@
-#ifndef DLSERVICES_H
-#define DLSERVICES_H
+#ifndef DLDRIVER_H
+#define DLDRIVER_H
 
 /*
     This file is part of driver-loader
@@ -23,12 +23,11 @@
     For more see the file 'LICENSE' for copying permission.
 */
 
-#include <Windows.h>
+#include <QString>
 
-namespace Services
+namespace Drivers
 {
-    bool Install(const char *driver, const char *service);
-    bool Uninstall(const char *service);
+    QString GetFileVersion(QString fName);
 }
 
-#endif // DLSERVICES_H
+#endif // DLDRIVER_H

@@ -1,5 +1,5 @@
-#ifndef DLSERVICES_H
-#define DLSERVICES_H
+#ifndef DLCOMMON_H
+#define DLCOMMON_H
 
 /*
     This file is part of driver-loader
@@ -23,12 +23,30 @@
     For more see the file 'LICENSE' for copying permission.
 */
 
-#include <Windows.h>
+#include "dlconfig.h"
 
-namespace Services
+#include <Windows.h>
+#include <QString>
+
+//#define TRUE 1
+//#define FALSE 0
+
+namespace Common
 {
-    bool Install(const char *driver, const char *service);
-    bool Uninstall(const char *service);
+    //initialize common lib stuff
+    void init(void);
+
+    //Allocates a block of memory from a heap.
+    void *hAlloc(SIZE_T size);
+
+    //Reallocates a block of memory from a heap.
+    void *hReAlloc(void *mem, SIZE_T size);
+
+    //free a memory block allocated from a heap by the hAlloc
+    void hFree(void *mem);
+
+    //console.log
+    void ConsoleLog(QString log);
 }
 
-#endif // DLSERVICES_H
+#endif // DLCOMMON_H

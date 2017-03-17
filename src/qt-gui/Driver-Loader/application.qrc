@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>driver-loader.png</file>
+        <file>myappico.ico</file>
+    </qresource>
+</RCC>

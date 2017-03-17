@@ -1,5 +1,5 @@
-#ifndef DLSERVICES_H
-#define DLSERVICES_H
+#ifndef DLCONFIG_H
+#define DLCONFIG_H
 
 /*
     This file is part of driver-loader
@@ -23,12 +23,8 @@
     For more see the file 'LICENSE' for copying permission.
 */
 
-#include <Windows.h>
+#define APP_VERSION "1.0"
+#define APP_DATE    "March, 2017"
+#define DEBUG   1
 
-namespace Services
-{
-    bool Install(const char *driver, const char *service);
-    bool Uninstall(const char *service);
-}
-
-#endif // DLSERVICES_H
+#endif // DLCONFIG_H
