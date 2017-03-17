@@ -38,13 +38,22 @@ namespace Services
     unsigned long Register(QString driver, QString serviceName, QString displayName, QString startType, QString error);
 
     //unregister a service (uninstall)
-    bool Unregister(const char *service);
+    bool Unregister(QString service);
 
     //start a service
-    bool Start(const char *service);
+    bool Start(SC_HANDLE service);
+
+    //start a service
+    bool Start(QString service);
 
     //stop a service
-    bool Stop(const char *service);
+    bool Stop(SC_HANDLE service);
+
+    //stop a service
+    bool Stop(QString service);
+
+    //open handle to service
+    SC_HANDLE Open(QString service);
 }
 
 #endif // DLSERVICES_H

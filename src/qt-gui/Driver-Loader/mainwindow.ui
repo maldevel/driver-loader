@@ -236,10 +236,18 @@
         </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QLineEdit" name="serviceNametxt"/>
+        <widget class="QLineEdit" name="serviceNametxt">
+         <property name="maxLength">
+          <number>256</number>
+         </property>
+        </widget>
        </item>
        <item row="5" column="1">
-        <widget class="QLineEdit" name="serviceDisplayNametxt"/>
+        <widget class="QLineEdit" name="serviceDisplayNametxt">
+         <property name="maxLength">
+          <number>256</number>
+         </property>
+        </widget>
        </item>
        <item row="6" column="1">
         <widget class="QComboBox" name="serviceTypecmb"/>

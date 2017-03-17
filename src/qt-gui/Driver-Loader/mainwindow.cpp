@@ -60,6 +60,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->serviceStartcmb->setCurrentIndex(2);
     ui->serviceErrorcmb->addItems(QList<QString>() << "Critical" << "Ignore" << "Normal" << "Severe");
     ui->serviceErrorcmb->setCurrentIndex(2);
+
+    ui->serviceNametxt->setValidator(new QRegExpValidator(QRegExp("[\\w]{1,256}"), this));
+    ui->serviceDisplayNametxt->setValidator(new QRegExpValidator(QRegExp("[\\w]{1,256}"), this));
 }
 
 MainWindow::~MainWindow()
@@ -94,7 +97,8 @@ void MainWindow::on_registerbtn_clicked()
         return;
     }
 
-    if (ui->serviceNametxt->text().trimmed().isEmpty())
+    if (ui->serviceNametxt->text().trimmed().isEmpty() ||
+            ui->serviceNametxt->text().trimmed().length() > 256)
     {
         QMessageBox msgBox;
         msgBox.setText("Please provide a name for the service.");
@@ -104,7 +108,8 @@ void MainWindow::on_registerbtn_clicked()
         return;
     }
 
-    if (ui->serviceDisplayNametxt->text().trimmed().isEmpty())
+    if (ui->serviceDisplayNametxt->text().trimmed().isEmpty() ||
+            ui->serviceDisplayNametxt->text().trimmed().length() > 256)
     {
         QMessageBox msgBox;
         msgBox.setText("Please provide a service name to display.");
@@ -122,7 +127,7 @@ void MainWindow::on_registerbtn_clicked()
     if (registrationResult == 2)
     {
         QMessageBox msgBox;
-        msgBox.setText("Registration failed. The service already exists.");
+        msgBox.setText("Service registration failed. The service already exists.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
@@ -131,7 +136,7 @@ void MainWindow::on_registerbtn_clicked()
     else if (registrationResult == 1)
     {
         QMessageBox msgBox;
-        msgBox.setText("Registration failed.");
+        msgBox.setText("Service registration failed.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
@@ -140,7 +145,7 @@ void MainWindow::on_registerbtn_clicked()
     else if (registrationResult == 0)
     {
         QMessageBox msgBox;
-        msgBox.setText("Registration succeeded.");
+        msgBox.setText("Service registration succeeded.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Information);
         msgBox.exec();
@@ -150,7 +155,26 @@ void MainWindow::on_registerbtn_clicked()
 
 void MainWindow::on_unregisterbtn_clicked()
 {
+    if (ui->serviceNametxt->text().trimmed().isEmpty() ||
+            ui->serviceNametxt->text().trimmed().length() > 256)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Please provide service name.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+        return;
+    }
 
+    if (Services::Unregister(ui->serviceNametxt->text().trimmed()) == false)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Service unregistration failed.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+        return;
+    }
 }
 
 void MainWindow::on_startbtn_clicked()

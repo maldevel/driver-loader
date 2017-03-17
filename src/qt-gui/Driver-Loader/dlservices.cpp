@@ -35,6 +35,14 @@ bool Services::init(void)
     return true;
 }
 
+SC_HANDLE Services::Open(QString service)
+{
+    if (service == NULL || scManager == NULL || service.trimmed().isEmpty() ||
+            service.trimmed().length() > 256) return NULL;
+
+    return OpenServiceA(scManager, service.toStdString().c_str(), SERVICE_ALL_ACCESS);
+}
+
 void Services::uninit(void)
 {
     if (scManager == NULL) return;
@@ -45,56 +53,62 @@ void Services::uninit(void)
 unsigned long Services::Register(QString driver, QString serviceName, QString displayName,
                                  QString startTypeStr, QString error)
 {
-    if (driver == NULL || serviceName == NULL || scManager == NULL || displayName == NULL) return false;
+    if (driver == NULL || serviceName == NULL || scManager == NULL ||
+            displayName == NULL || startTypeStr == NULL || error == NULL ||
+            driver.trimmed().isEmpty() || serviceName.trimmed().isEmpty() ||
+            displayName.trimmed().isEmpty() || startTypeStr.trimmed().isEmpty() ||
+            error.trimmed().isEmpty() || serviceName.trimmed().length() > 256 ||
+            displayName.trimmed().length() > 256) return false;
 
     SC_HANDLE scService;
     unsigned long startType = SERVICE_DEMAND_START;
     unsigned long errorControl = SERVICE_ERROR_NORMAL;
 
     //"Automatic" "Boot" "Demand" "Disabled" "System"
-    if (startTypeStr.compare("Automatic", Qt::CaseSensitive) == 0)
+    if (startTypeStr.trimmed().compare("Automatic", Qt::CaseSensitive) == 0)
     {
         startType = SERVICE_AUTO_START;
     }
-    else if (startTypeStr.compare("Boot", Qt::CaseSensitive) == 0)
+    else if (startTypeStr.trimmed().compare("Boot", Qt::CaseSensitive) == 0)
     {
         startType = SERVICE_BOOT_START;
     }
-    else if (startTypeStr.compare("Demand", Qt::CaseSensitive) == 0)
+    else if (startTypeStr.trimmed().compare("Demand", Qt::CaseSensitive) == 0)
     {
         startType = SERVICE_DEMAND_START;
     }
-    else if (startTypeStr.compare("Disabled", Qt::CaseSensitive) == 0)
+    else if (startTypeStr.trimmed().compare("Disabled", Qt::CaseSensitive) == 0)
     {
         startType = SERVICE_DISABLED;
     }
-    else if (startTypeStr.compare("System", Qt::CaseSensitive) == 0)
+    else if (startTypeStr.trimmed().compare("System", Qt::CaseSensitive) == 0)
     {
         startType = SERVICE_SYSTEM_START;
     }
 
     //"Critical" "Ignore" "Normal" "Severe"
-    if (error.compare("Critical", Qt::CaseSensitive) == 0)
+    if (error.trimmed().compare("Critical", Qt::CaseSensitive) == 0)
     {
         errorControl = SERVICE_ERROR_CRITICAL;
     }
-    else if (error.compare("Ignore", Qt::CaseSensitive) == 0)
+    else if (error.trimmed().compare("Ignore", Qt::CaseSensitive) == 0)
     {
         errorControl = SERVICE_ERROR_IGNORE;
     }
-    else if (error.compare("Normal", Qt::CaseSensitive) == 0)
+    else if (error.trimmed().compare("Normal", Qt::CaseSensitive) == 0)
     {
         errorControl = SERVICE_ERROR_NORMAL;
     }
-    else if (error.compare("Severe", Qt::CaseSensitive) == 0)
+    else if (error.trimmed().compare("Severe", Qt::CaseSensitive) == 0)
     {
         errorControl = SERVICE_ERROR_SEVERE;
     }
 
-    if ((scService = CreateServiceA(scManager, serviceName.toStdString().c_str(), displayName.toStdString().c_str(),
+    if ((scService = CreateServiceA(scManager, serviceName.trimmed().toStdString().c_str(),
+                                    displayName.trimmed().toStdString().c_str(),
                                     SERVICE_ALL_ACCESS, SERVICE_KERNEL_DRIVER,
                                     startType, errorControl,
-                                    driver.toStdString().c_str(),
+                                    driver.trimmed().toStdString().c_str(),
                                     NULL, NULL, NULL, NULL, NULL)) == NULL)
     {
         if (GetLastError() == ERROR_SERVICE_EXISTS)
@@ -110,23 +124,72 @@ unsigned long Services::Register(QString driver, QString serviceName, QString di
     return 0;
 }
 
-bool Services::Unregister(const char *service)
+bool Services::Unregister(QString service)
+{
+    if (service == NULL || scManager == NULL || service.trimmed().isEmpty() ||
+            service.trimmed().length() > 256) return false;
+
+    SC_HANDLE srvHandle;
+
+    if ((srvHandle = Open(service)) == NULL)
+    {
+        return false;
+    }
+
+    if (Stop(srvHandle) == false)
+    {
+        CloseServiceHandle(srvHandle);
+        return false;
+    }
+
+    if (DeleteService(srvHandle) == 0)
+    {
+        CloseServiceHandle(srvHandle);
+        return false;
+    }
+
+    CloseServiceHandle(srvHandle);
+    return true;
+}
+
+bool Services::Start(SC_HANDLE service)
 {
     if (service == NULL || scManager == NULL) return false;
+
+    if (StartService(service, 0, NULL) == 0)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool Services::Start(QString service)
+{
+    if (service == NULL || scManager == NULL || service.trimmed().isEmpty() ||
+            service.trimmed().length() > 256) return false;
 
     return false;
 }
 
-bool Start(const char *service)
+bool Services::Stop(SC_HANDLE service)
 {
     if (service == NULL || scManager == NULL) return false;
+
+    SERVICE_STATUS serviceStatus;
+
+    if (ControlService(service, SERVICE_CONTROL_STOP, &serviceStatus) != 0)
+    {
+        return true;
+    }
 
     return false;
 }
 
-bool Stop(const char *service)
+bool Services::Stop(QString service)
 {
-    if (service == NULL || scManager == NULL) return false;
+    if (service == NULL || scManager == NULL || service.trimmed().isEmpty() ||
+            service.trimmed().length() > 256) return false;
 
     return false;
 }
