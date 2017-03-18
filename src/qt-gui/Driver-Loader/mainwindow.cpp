@@ -35,7 +35,6 @@ static QString _fileName = 0;
 
 static void _loadFile(Ui::MainWindow *ui, QString filename)
 {
-    //ui->driverPathtxt->setText(filename);
     ui->driverVersiontxt->setText(Drivers::GetFileVersion(filename));
     ui->driverSizetxt->setText(QString::number(Drivers::GetDriverFileSize(filename)) + " bytes");
     ui->driverFileTimetxt->setText(Drivers::GetFileLastWriteTime(filename));
@@ -86,10 +85,10 @@ void MainWindow::on_driverPathtxt_textChanged(const QString &arg1)
 void MainWindow::on_registerbtn_clicked()
 {
     unsigned long registrationResult = 0;
+    QMessageBox msgBox;
 
     if (ui->driverPathtxt->text().trimmed().isEmpty())
     {
-        QMessageBox msgBox;
         msgBox.setText("Please provide a valid driver filepath.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Warning);
@@ -100,7 +99,6 @@ void MainWindow::on_registerbtn_clicked()
     if (ui->serviceNametxt->text().trimmed().isEmpty() ||
             ui->serviceNametxt->text().trimmed().length() > 256)
     {
-        QMessageBox msgBox;
         msgBox.setText("Please provide a name for the service.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Warning);
@@ -111,7 +109,6 @@ void MainWindow::on_registerbtn_clicked()
     if (ui->serviceDisplayNametxt->text().trimmed().isEmpty() ||
             ui->serviceDisplayNametxt->text().trimmed().length() > 256)
     {
-        QMessageBox msgBox;
         msgBox.setText("Please provide a service name to display.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Warning);
@@ -124,41 +121,47 @@ void MainWindow::on_registerbtn_clicked()
                                             ui->serviceDisplayNametxt->text().trimmed(),
                                             ui->serviceStartcmb->itemText(ui->serviceStartcmb->currentIndex()),
                                             ui->serviceErrorcmb->itemText(ui->serviceErrorcmb->currentIndex()));
-    if (registrationResult == 2)
+
+    switch (registrationResult)
     {
-        QMessageBox msgBox;
-        msgBox.setText("Service registration failed. The service already exists.");
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.exec();
-        return;
-    }
-    else if (registrationResult == 1)
-    {
-        QMessageBox msgBox;
-        msgBox.setText("Service registration failed.");
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setIcon(QMessageBox::Critical);
-        msgBox.exec();
-        return;
-    }
-    else if (registrationResult == 0)
-    {
-        QMessageBox msgBox;
-        msgBox.setText("Service registration succeeded.");
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setIcon(QMessageBox::Information);
-        msgBox.exec();
-        return;
+        case ERROR_SERVICE_EXISTS:
+            msgBox.setText("Service registration failed. The service already exists.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.exec();
+            return;
+
+        case 1:
+            msgBox.setText("Service registration failed. Empty or invalid parameters have been provided.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Critical);
+            msgBox.exec();
+            return;
+
+        case 0:
+            msgBox.setText("Service registration succeeded.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Information);
+            msgBox.exec();
+            return;
+
+        default:
+            msgBox.setText(QString("Service registration failed. Error code %1.").arg(registrationResult));
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Critical);
+            msgBox.exec();
+            return;
     }
 }
 
 void MainWindow::on_unregisterbtn_clicked()
 {
+    unsigned long unregistrationResult = 0;
+    QMessageBox msgBox;
+
     if (ui->serviceNametxt->text().trimmed().isEmpty() ||
             ui->serviceNametxt->text().trimmed().length() > 256)
     {
-        QMessageBox msgBox;
         msgBox.setText("Please provide service name.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Warning);
@@ -166,32 +169,48 @@ void MainWindow::on_unregisterbtn_clicked()
         return;
     }
 
-    if (Services::Unregister(ui->serviceNametxt->text().trimmed()) == false)
+    unregistrationResult = Services::Unregister(ui->serviceNametxt->text().trimmed());
+
+    switch (unregistrationResult)
     {
-        QMessageBox msgBox;
-        msgBox.setText("Service unregistration failed.");
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.exec();
-        return;
-    }
-    else
-    {
-        QMessageBox msgBox;
-        msgBox.setText("Service unregistration succeeded.");
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setIcon(QMessageBox::Information);
-        msgBox.exec();
-        return;
+        case 1:
+            msgBox.setText("Service unregistration failed.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.exec();
+            return;
+
+        case ERROR_SERVICE_DOES_NOT_EXIST:
+            msgBox.setText("The specified service does not exist as an installed service.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.exec();
+            return;
+
+        case 0:
+            msgBox.setText("Service unregistration succeeded.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Information);
+            msgBox.exec();
+            return;
+
+        default:
+            msgBox.setText(QString("Service unregistration failed. Error code %1.").arg(unregistrationResult));
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Critical);
+            msgBox.exec();
+            return;
     }
 }
 
 void MainWindow::on_startbtn_clicked()
 {
+    QMessageBox msgBox;
+    unsigned long startResult = 0;
+
     if (ui->serviceNametxt->text().trimmed().isEmpty() ||
             ui->serviceNametxt->text().trimmed().length() > 256)
     {
-        QMessageBox msgBox;
         msgBox.setText("Please provide service name.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Warning);
@@ -199,32 +218,55 @@ void MainWindow::on_startbtn_clicked()
         return;
     }
 
-    if (Services::Start(ui->serviceNametxt->text().trimmed()) == false)
+    startResult = Services::Start(ui->serviceNametxt->text().trimmed());
+
+    switch (startResult)
     {
-        QMessageBox msgBox;
-        msgBox.setText("Starting service failed.");
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.exec();
-        return;
-    }
-    else
-    {
-        QMessageBox msgBox;
-        msgBox.setText("Service started.");
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setIcon(QMessageBox::Information);
-        msgBox.exec();
-        return;
+        case 1:
+            msgBox.setText("Starting service failed.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.exec();
+            return;
+
+        case ERROR_SHARING_VIOLATION:
+            msgBox.setText("The process cannot access the file because it is being used by another process.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.exec();
+            return;
+
+        case ERROR_SERVICE_DOES_NOT_EXIST:
+            msgBox.setText("The specified service does not exist as an installed service.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.exec();
+            return;
+
+        case 0:
+            msgBox.setText("Service started.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Information);
+            msgBox.exec();
+            return;
+
+        default:
+            msgBox.setText(QString("Starting service failed. Error code %1.").arg(startResult));
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Critical);
+            msgBox.exec();
+            return;
     }
 }
 
 void MainWindow::on_stopbtn_clicked()
 {
+    QMessageBox msgBox;
+    unsigned long stopResult = 0;
+
     if (ui->serviceNametxt->text().trimmed().isEmpty() ||
             ui->serviceNametxt->text().trimmed().length() > 256)
     {
-        QMessageBox msgBox;
         msgBox.setText("Please provide service name.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Warning);
@@ -232,22 +274,43 @@ void MainWindow::on_stopbtn_clicked()
         return;
     }
 
-    if (Services::Stop(ui->serviceNametxt->text().trimmed()) == false)
+    stopResult = Services::Stop(ui->serviceNametxt->text().trimmed());
+
+    switch (stopResult)
     {
-        QMessageBox msgBox;
-        msgBox.setText("Stopping service failed.");
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.exec();
-        return;
-    }
-    else
-    {
-        QMessageBox msgBox;
-        msgBox.setText("Service stopped.");
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setIcon(QMessageBox::Information);
-        msgBox.exec();
-        return;
+        case 1:
+            msgBox.setText("Stopping service failed.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.exec();
+            return;
+
+        case ERROR_SERVICE_NOT_ACTIVE:
+            msgBox.setText("The service has not been started.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.exec();
+            return;
+
+        case ERROR_SERVICE_DOES_NOT_EXIST:
+            msgBox.setText("The specified service does not exist as an installed service.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.exec();
+            return;
+
+        case 0:
+            msgBox.setText("Service stopped.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Information);
+            msgBox.exec();
+            return;
+
+        default:
+            msgBox.setText(QString("Stopping service failed. Error code %1.").arg(stopResult));
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Critical);
+            msgBox.exec();
+            return;
     }
 }

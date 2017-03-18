@@ -58,7 +58,7 @@ unsigned long Services::Register(QString driver, QString serviceName, QString di
             driver.trimmed().isEmpty() || serviceName.trimmed().isEmpty() ||
             displayName.trimmed().isEmpty() || startTypeStr.trimmed().isEmpty() ||
             error.trimmed().isEmpty() || serviceName.trimmed().length() > 256 ||
-            displayName.trimmed().length() > 256) return false;
+            displayName.trimmed().length() > 256) return 1;
 
     SC_HANDLE scService;
     unsigned long startType = SERVICE_DEMAND_START;
@@ -111,12 +111,7 @@ unsigned long Services::Register(QString driver, QString serviceName, QString di
                                     driver.trimmed().toStdString().c_str(),
                                     NULL, NULL, NULL, NULL, NULL)) == NULL)
     {
-        if (GetLastError() == ERROR_SERVICE_EXISTS)
-        {
-            return 2;
-        }
-
-        return 1;
+        return GetLastError();
     }
 
     CloseServiceHandle(scService);
@@ -124,101 +119,109 @@ unsigned long Services::Register(QString driver, QString serviceName, QString di
     return 0;
 }
 
-bool Services::Unregister(QString service)
+unsigned long Services::Unregister(QString service)
 {
     if (service == NULL || scManager == NULL || service.trimmed().isEmpty() ||
-            service.trimmed().length() > 256) return false;
+            service.trimmed().length() > 256) return 1;
 
     SC_HANDLE srvHandle;
+    unsigned long error = 0;
 
     if ((srvHandle = Open(service)) == NULL)
     {
-        return false;
+        return GetLastError();
     }
 
-    Stop(srvHandle);
-    //    if (Stop(srvHandle) == false)
-    //    {
-    //        CloseServiceHandle(srvHandle);
-    //        return false;
-    //    }
+    if ((error = Stop(srvHandle)) != 0)
+    {
+        if (error != ERROR_SERVICE_NOT_ACTIVE)
+        {
+            CloseServiceHandle(srvHandle);
+            return error;
+        }
+    }
 
     if (DeleteService(srvHandle) == 0)
     {
         CloseServiceHandle(srvHandle);
-        return false;
+        return GetLastError();
     }
 
     CloseServiceHandle(srvHandle);
-    return true;
+
+    return 0;
 }
 
-bool Services::Start(SC_HANDLE service)
+unsigned long Services::Start(SC_HANDLE service)
 {
-    if (service == NULL || scManager == NULL) return false;
+    if (service == NULL || scManager == NULL) return 1;
 
     if (StartService(service, 0, NULL) == 0)
     {
-        return false;
+        return GetLastError();
     }
 
-    return true;
+    return 0;
 }
 
-bool Services::Start(QString service)
+unsigned long Services::Start(QString service)
 {
     if (service == NULL || scManager == NULL || service.trimmed().isEmpty() ||
-            service.trimmed().length() > 256) return false;
+            service.trimmed().length() > 256) return 1;
+
+    unsigned long error = 0;
 
     SC_HANDLE srvHandle;
 
     if ((srvHandle = Open(service)) == NULL)
     {
-        return false;
+        return GetLastError();
     }
 
-    if (Start(srvHandle) == false)
+    if ((error = Start(srvHandle)) != 0)
     {
         CloseServiceHandle(srvHandle);
-        return false;
+        return error;
     }
 
     CloseServiceHandle(srvHandle);
-    return true;
+
+    return 0;
 }
 
-bool Services::Stop(SC_HANDLE service)
+unsigned long Services::Stop(SC_HANDLE service)
 {
-    if (service == NULL || scManager == NULL) return false;
+    if (service == NULL || scManager == NULL) return 1;
 
     SERVICE_STATUS serviceStatus;
 
-    if (ControlService(service, SERVICE_CONTROL_STOP, &serviceStatus) != 0)
+    if (ControlService(service, SERVICE_CONTROL_STOP, &serviceStatus) == 0)
     {
-        return true;
+        return GetLastError();
     }
 
-    return false;
+    return 0;
 }
 
-bool Services::Stop(QString service)
+unsigned long Services::Stop(QString service)
 {
     if (service == NULL || scManager == NULL || service.trimmed().isEmpty() ||
-            service.trimmed().length() > 256) return false;
+            service.trimmed().length() > 256) return 1;
 
     SC_HANDLE srvHandle;
+    unsigned long error = 0;
 
     if ((srvHandle = Open(service)) == NULL)
     {
-        return false;
+        return GetLastError();
     }
 
-    if (Stop(srvHandle) == false)
+    if ((error = Stop(srvHandle)) != 0)
     {
         CloseServiceHandle(srvHandle);
-        return false;
+        return error;
     }
 
     CloseServiceHandle(srvHandle);
-    return true;
+    return 0;
 }

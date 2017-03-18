@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
         QApplication::quit();
+
         return 1;
     }
     else

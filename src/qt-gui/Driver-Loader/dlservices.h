@@ -38,19 +38,19 @@ namespace Services
     unsigned long Register(QString driver, QString serviceName, QString displayName, QString startType, QString error);
 
     //unregister a service (uninstall)
-    bool Unregister(QString service);
+    unsigned long Unregister(QString service);
 
     //start a service
-    bool Start(SC_HANDLE service);
+    unsigned long Start(SC_HANDLE service);
 
     //start a service
-    bool Start(QString service);
+    unsigned long Start(QString service);
 
     //stop a service
-    bool Stop(SC_HANDLE service);
+    unsigned long Stop(SC_HANDLE service);
 
     //stop a service
-    bool Stop(QString service);
+    unsigned long Stop(QString service);
 
     //open handle to service
     SC_HANDLE Open(QString service);
