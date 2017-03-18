@@ -25,15 +25,13 @@
 #include <Windows.h>
 #include <Shlwapi.h>
 
-static BOOL _fileExists(const char *filename)
-{
+static BOOL _fileExists(const char *filename) {
     if (filename == NULL)return FALSE;
 
     return PathFileExistsA(filename);
 }
 
-QString Drivers::GetFileVersion(QString fName)
-{
+QString Drivers::GetFileVersion(QString fName) {
     if (fName == NULL || !_fileExists(fName.toStdString().c_str())) return "";
 
     DWORD handle;
@@ -43,24 +41,20 @@ QString Drivers::GetFileVersion(QString fName)
     unsigned int len = 0;
     QString fVersion = 0;
 
-    if ((size = GetFileVersionInfoSizeA(fName.toStdString().c_str(), &handle)) == FALSE)
-    {
+    if ((size = GetFileVersionInfoSizeA(fName.toStdString().c_str(), &handle)) == FALSE) {
         return "";
     }
 
-    if ((buffer = Common::hAlloc(size)) == NULL)
-    {
+    if ((buffer = Common::hAlloc(size)) == NULL) {
         return "";
     }
 
-    if (GetFileVersionInfoA(fName.toStdString().c_str(), handle, size, buffer) == FALSE)
-    {
+    if (GetFileVersionInfoA(fName.toStdString().c_str(), handle, size, buffer) == FALSE) {
         Common::hFree(buffer);
         return "";
     }
 
-    if (VerQueryValue(buffer, QString("\\").toStdWString().c_str(), (void **)&lpBuffer, &len) == FALSE)
-    {
+    if (VerQueryValue(buffer, QString("\\").toStdWString().c_str(), (void **)&lpBuffer, &len) == FALSE) {
         Common::hFree(buffer);
         return "";
     }
@@ -76,25 +70,20 @@ QString Drivers::GetFileVersion(QString fName)
     return fVersion;
 }
 
-unsigned long Drivers::GetDriverFileSize(QString fName)
-{
+unsigned long Drivers::GetDriverFileSize(QString fName) {
     if (fName == NULL || !_fileExists(fName.toStdString().c_str())) return 0;
 
     HANDLE hFile;
     unsigned long size = 0;
     unsigned long sizeHigh = 0;
 
-    if ((hFile = CreateFileA(fName.toStdString().c_str(), GENERIC_READ, 0, 0, OPEN_EXISTING, 0, 0)) == INVALID_HANDLE_VALUE)
-    {
+    if ((hFile = CreateFileA(fName.toStdString().c_str(), GENERIC_READ, 0, 0, OPEN_EXISTING, 0, 0)) == INVALID_HANDLE_VALUE) {
         return 0;
     }
 
-    if ((size = GetFileSize(hFile,  NULL)) == INVALID_FILE_SIZE)
-    {
-        if (GetLastError() == NO_ERROR)
-        {
-            if ((size = GetFileSize(hFile,  &sizeHigh)) != INVALID_FILE_SIZE)
-            {
+    if ((size = GetFileSize(hFile,  NULL)) == INVALID_FILE_SIZE) {
+        if (GetLastError() == NO_ERROR) {
+            if ((size = GetFileSize(hFile,  &sizeHigh)) != INVALID_FILE_SIZE) {
                 return sizeHigh;
             }
         }
@@ -106,8 +95,7 @@ unsigned long Drivers::GetDriverFileSize(QString fName)
     return size;
 }
 
-QString Drivers::GetFileLastWriteTime(QString fName)
-{
+QString Drivers::GetFileLastWriteTime(QString fName) {
     if (fName == NULL || !_fileExists(fName.toStdString().c_str())) return 0;
 
     HANDLE hFile;
@@ -116,28 +104,23 @@ QString Drivers::GetFileLastWriteTime(QString fName)
     QString day = "";
     QString month = "";
 
-    if ((hFile = CreateFileA(fName.toStdString().c_str(), GENERIC_READ, 0, 0, OPEN_EXISTING, 0, 0)) == INVALID_HANDLE_VALUE)
-    {
+    if ((hFile = CreateFileA(fName.toStdString().c_str(), GENERIC_READ, 0, 0, OPEN_EXISTING, 0, 0)) == INVALID_HANDLE_VALUE) {
         return "";
     }
 
-    if (GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite) == 0)
-    {
+    if (GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite) == 0) {
         return "";
     }
 
-    if (FileTimeToSystemTime(&ftWrite, &stUTC) == 0)
-    {
+    if (FileTimeToSystemTime(&ftWrite, &stUTC) == 0) {
         return "";
     }
 
-    if (SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stLocal) == 0)
-    {
+    if (SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stLocal) == 0) {
         return "";
     }
 
-    switch (stLocal.wDayOfWeek)
-    {
+    switch (stLocal.wDayOfWeek) {
         case 0:
             day = "Sunday";
             break;
@@ -161,8 +144,7 @@ QString Drivers::GetFileLastWriteTime(QString fName)
             break;
     };
 
-    switch (stLocal.wMonth)
-    {
+    switch (stLocal.wMonth) {
         case 1:
             month = "January";
             break;

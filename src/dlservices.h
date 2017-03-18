@@ -26,8 +26,7 @@
 #include <Windows.h>
 #include <QString>
 
-namespace Services
-{
+namespace Services {
     //initialize services lib stuff
     bool init(void);
 

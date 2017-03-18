@@ -25,8 +25,7 @@
 
 #include <QString>
 
-namespace Drivers
-{
+namespace Drivers {
     //get driver file version
     QString GetFileVersion(QString fName);
 

@@ -27,14 +27,12 @@
 #include <QApplication>
 #include <QMessageBox>
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     Common::init();
 
     QApplication a(argc, argv);
 
-    if (Services::init() == false)
-    {
+    if (Services::init() == false) {
         QMessageBox msgBox;
         msgBox.setText("Can't connect to service control manager.");
         msgBox.setStandardButtons(QMessageBox::Ok);
@@ -43,9 +41,7 @@ int main(int argc, char *argv[])
         QApplication::quit();
 
         return 1;
-    }
-    else
-    {
+    } else {
         MainWindow w;
         w.show();
 

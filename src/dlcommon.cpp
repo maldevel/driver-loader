@@ -26,43 +26,37 @@
 static HANDLE processHeap;
 
 //retrieve a handle to the default heap of this process
-void Common::init(void)
-{
+void Common::init(void) {
     processHeap = GetProcessHeap();
 }
 
 //HeapAlloc wrapper
 //allocate a block of memory from a heap
-void *Common::hAlloc(SIZE_T size)
-{
+void *Common::hAlloc(SIZE_T size) {
     if (processHeap == NULL || size <= 0) return NULL;
 
     return HeapAlloc(processHeap, HEAP_ZERO_MEMORY, size);
 }
 
 //HeapReAlloc wrapper
-void *Common::hReAlloc(void *mem, SIZE_T size)
-{
+void *Common::hReAlloc(void *mem, SIZE_T size) {
     if (processHeap == NULL || mem == NULL || size <= 0) return NULL;
 
     return HeapReAlloc(processHeap, HEAP_ZERO_MEMORY, mem, size);
 }
 
 //free a memory block allocated from a heap by the HeapAlloc
-void Common::hFree(void *mem)
-{
+void Common::hFree(void *mem) {
     if (processHeap == NULL || mem == NULL) return;
 
     HeapFree(processHeap, 0, mem);
     mem = NULL;
 }
 
-void Common::ConsoleLog(QString log)
-{
+void Common::ConsoleLog(QString log) {
     if (log == NULL) return;
 
-    if (DEBUG)
-    {
+    if (DEBUG) {
         qDebug() << log;
     }
 }

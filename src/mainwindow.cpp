@@ -33,8 +33,7 @@
 
 static QString _fileName = 0;
 
-static void _loadFile(Ui::MainWindow *ui, QString filename)
-{
+static void _loadFile(Ui::MainWindow *ui, QString filename) {
     ui->driverVersiontxt->setText(Drivers::GetFileVersion(filename));
     ui->driverSizetxt->setText(QString::number(Drivers::GetDriverFileSize(filename)) + " bytes");
     ui->driverFileTimetxt->setText(Drivers::GetFileLastWriteTime(filename));
@@ -46,8 +45,7 @@ static void _loadFile(Ui::MainWindow *ui, QString filename)
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
-{
+    ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
     //disable maximize button and window resizing
@@ -64,31 +62,26 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->serviceDisplayNametxt->setValidator(new QRegExpValidator(QRegExp("[\\w]{1,256}"), this));
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     Services::uninit();
     delete ui;
 }
 
-void MainWindow::on_browsebtn_clicked()
-{
+void MainWindow::on_browsebtn_clicked() {
     _fileName = QFileDialog::getOpenFileName(this, tr("Select Windows Driver"), "", tr("Windows Drivers Files (*.sys)"));
     ui->driverPathtxt->setText(_fileName);
 }
 
-void MainWindow::on_driverPathtxt_textChanged(const QString &arg1)
-{
+void MainWindow::on_driverPathtxt_textChanged(const QString &arg1) {
     (void)arg1;
     _loadFile(ui, ui->driverPathtxt->text());
 }
 
-void MainWindow::on_registerbtn_clicked()
-{
+void MainWindow::on_registerbtn_clicked() {
     unsigned long registrationResult = 0;
     QMessageBox msgBox;
 
-    if (ui->driverPathtxt->text().trimmed().isEmpty())
-    {
+    if (ui->driverPathtxt->text().trimmed().isEmpty()) {
         msgBox.setText("Please provide a valid driver filepath.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Warning);
@@ -97,8 +90,7 @@ void MainWindow::on_registerbtn_clicked()
     }
 
     if (ui->serviceNametxt->text().trimmed().isEmpty() ||
-            ui->serviceNametxt->text().trimmed().length() > 256)
-    {
+            ui->serviceNametxt->text().trimmed().length() > 256) {
         msgBox.setText("Please provide a name for the service.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Warning);
@@ -107,8 +99,7 @@ void MainWindow::on_registerbtn_clicked()
     }
 
     if (ui->serviceDisplayNametxt->text().trimmed().isEmpty() ||
-            ui->serviceDisplayNametxt->text().trimmed().length() > 256)
-    {
+            ui->serviceDisplayNametxt->text().trimmed().length() > 256) {
         msgBox.setText("Please provide a service name to display.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Warning);
@@ -122,8 +113,7 @@ void MainWindow::on_registerbtn_clicked()
                                             ui->serviceStartcmb->itemText(ui->serviceStartcmb->currentIndex()),
                                             ui->serviceErrorcmb->itemText(ui->serviceErrorcmb->currentIndex()));
 
-    switch (registrationResult)
-    {
+    switch (registrationResult) {
         case ERROR_SERVICE_EXISTS:
             msgBox.setText("Service registration failed. The service already exists.");
             msgBox.setStandardButtons(QMessageBox::Ok);
@@ -154,14 +144,12 @@ void MainWindow::on_registerbtn_clicked()
     }
 }
 
-void MainWindow::on_unregisterbtn_clicked()
-{
+void MainWindow::on_unregisterbtn_clicked() {
     unsigned long unregistrationResult = 0;
     QMessageBox msgBox;
 
     if (ui->serviceNametxt->text().trimmed().isEmpty() ||
-            ui->serviceNametxt->text().trimmed().length() > 256)
-    {
+            ui->serviceNametxt->text().trimmed().length() > 256) {
         msgBox.setText("Please provide service name.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Warning);
@@ -171,8 +159,7 @@ void MainWindow::on_unregisterbtn_clicked()
 
     unregistrationResult = Services::Unregister(ui->serviceNametxt->text().trimmed());
 
-    switch (unregistrationResult)
-    {
+    switch (unregistrationResult) {
         case 1:
             msgBox.setText("Service unregistration failed.");
             msgBox.setStandardButtons(QMessageBox::Ok);
@@ -203,14 +190,12 @@ void MainWindow::on_unregisterbtn_clicked()
     }
 }
 
-void MainWindow::on_startbtn_clicked()
-{
+void MainWindow::on_startbtn_clicked() {
     QMessageBox msgBox;
     unsigned long startResult = 0;
 
     if (ui->serviceNametxt->text().trimmed().isEmpty() ||
-            ui->serviceNametxt->text().trimmed().length() > 256)
-    {
+            ui->serviceNametxt->text().trimmed().length() > 256) {
         msgBox.setText("Please provide service name.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Warning);
@@ -220,8 +205,7 @@ void MainWindow::on_startbtn_clicked()
 
     startResult = Services::Start(ui->serviceNametxt->text().trimmed());
 
-    switch (startResult)
-    {
+    switch (startResult) {
         case 1:
             msgBox.setText("Starting service failed.");
             msgBox.setStandardButtons(QMessageBox::Ok);
@@ -259,14 +243,12 @@ void MainWindow::on_startbtn_clicked()
     }
 }
 
-void MainWindow::on_stopbtn_clicked()
-{
+void MainWindow::on_stopbtn_clicked() {
     QMessageBox msgBox;
     unsigned long stopResult = 0;
 
     if (ui->serviceNametxt->text().trimmed().isEmpty() ||
-            ui->serviceNametxt->text().trimmed().length() > 256)
-    {
+            ui->serviceNametxt->text().trimmed().length() > 256) {
         msgBox.setText("Please provide service name.");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Warning);
@@ -276,8 +258,7 @@ void MainWindow::on_stopbtn_clicked()
 
     stopResult = Services::Stop(ui->serviceNametxt->text().trimmed());
 
-    switch (stopResult)
-    {
+    switch (stopResult) {
         case 1:
             msgBox.setText("Stopping service failed.");
             msgBox.setStandardButtons(QMessageBox::Ok);

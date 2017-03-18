@@ -31,8 +31,7 @@
 //#define TRUE 1
 //#define FALSE 0
 
-namespace Common
-{
+namespace Common {
     //initialize common lib stuff
     void init(void);
 
