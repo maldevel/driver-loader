@@ -84,9 +84,12 @@ unsigned long Drivers::GetDriverFileSize(QString fName) {
     if ((size = GetFileSize(hFile,  NULL)) == INVALID_FILE_SIZE) {
         if (GetLastError() == NO_ERROR) {
             if ((size = GetFileSize(hFile,  &sizeHigh)) != INVALID_FILE_SIZE) {
+                CloseHandle(hFile);
                 return sizeHigh;
             }
         }
+
+        CloseHandle(hFile);
         return 0;
     }
 
@@ -109,14 +112,17 @@ QString Drivers::GetFileLastWriteTime(QString fName) {
     }
 
     if (GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite) == 0) {
+        CloseHandle(hFile);
         return "";
     }
 
     if (FileTimeToSystemTime(&ftWrite, &stUTC) == 0) {
+        CloseHandle(hFile);
         return "";
     }
 
     if (SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stLocal) == 0) {
+        CloseHandle(hFile);
         return "";
     }
 
@@ -182,6 +188,8 @@ QString Drivers::GetFileLastWriteTime(QString fName) {
             month = "December";
             break;
     };
+
+    CloseHandle(hFile);
 
     return QString("%1, %2 %3, %4 %5:%6:%7")
            .arg(day)

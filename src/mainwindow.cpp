@@ -29,7 +29,6 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QDir>
 
 static QString _fileName = 0;
 
@@ -222,6 +221,13 @@ void MainWindow::on_startbtn_clicked() {
 
         case ERROR_SERVICE_DOES_NOT_EXIST:
             msgBox.setText("The specified service does not exist as an installed service.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.exec();
+            return;
+
+        case ERROR_SERVICE_ALREADY_RUNNING:
+            msgBox.setText("An instance of the service is already running.");
             msgBox.setStandardButtons(QMessageBox::Ok);
             msgBox.setIcon(QMessageBox::Warning);
             msgBox.exec();
